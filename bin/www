@@ -23,23 +23,34 @@ app.set('port', port);
 
 var server = http.createServer(app);
 
-var str = new Collection();
-
 var io = require('socket.io').listen(server);
 var cronJob = require("cron").CronJob;
 
 railRoadState = app.get('railRoadState'); // Check Business Objects initialization
+scannerCollection = app.get('scannerCollection');
 trafficlightCollection = app.get('trafficlightCollection');
 
 io.sockets.on('connection', function (socket) {
     console.log('Client connected');
     socket.emit('message', 'Connected to ' + server.address().address + ':' + server.address().port);
     // TODO Serial Datasources (Requests/responses to/from Arduino modules), implement arduino.js file in models directory
-    // Trafficlight Emit Simulator...
+
     new cronJob("*/2 * * * * *", function() {
         if (railRoadState === true) {
-            var randomId = Math.floor((Math.random() * 20) + 1);
-            var id = 'ID' + randomId;
+            // Scanner Emit Message Simulator...
+            var randomId = Math.floor((Math.random() * scannerCollection.getSize()) + 1);
+            for (var indexId = 1; indexId <= scannerCollection.getSize(); indexId++) {
+                var id = 'SC' + indexId;
+                if (randomId === indexId) {
+                    socket.emit('message', scannerCollection.getObjectById(id).buildGreenEmitMessage());
+                }
+                else {
+                    socket.emit('message', scannerCollection.getObjectById(id).buildOffEmitMessage());
+                }
+            }
+            // Trafficlight Emit Message Simulator...
+            randomId = Math.floor((Math.random() * trafficlightCollection.getSize()) + 1);
+            id = 'TR' + randomId;
             var randomColor = Math.floor((Math.random() * 3) + 1);
             switch(randomColor) {
                 case 1:

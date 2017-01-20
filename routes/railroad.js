@@ -50,7 +50,7 @@ function Draw(win){
     var raphael = require('raphael');
     raphael.setWindow(win);
     // Start drawing some stuff with raphael, which will write to the virtual "window"
-    var paper = raphael(0, 0, "100%", "100%");
+    var paper = raphael(0, 0, 1810, 1056);
     var text = paper.text(965, 30, "RailRoad Mockup");
     text.attr({ "font-size": 20});
     railRoadState = InitBusinessObjects(paper); // Change Business Objects initialization state
@@ -62,6 +62,7 @@ function Draw(win){
 
 function InitBusinessObjects(paper) {
     factory = new Factory(paper ,fs);
+    factory.create("Scanner", scannerCollection);
     factory.create("TrafficLight", trafficlightCollection);
     return true;
 }

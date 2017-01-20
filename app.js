@@ -18,6 +18,8 @@ app.set('view engine', 'jade');
 // Business Objects Collections
 var railRoadState =false;
 app.set('railRoadState', railRoadState);
+var scannerCollection = new Collection();
+app.set('scannerCollection', scannerCollection);
 var trafficlightCollection = new Collection();
 app.set('trafficlightCollection', trafficlightCollection);
 

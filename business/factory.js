@@ -7,7 +7,18 @@ function Factory(paper, fs) {
     this.create = function(type, collection) {
         switch(type) {
             case "Scanner":
-                // TODO
+                for (var index = 0; index < this.json.scanner.length; index++) {
+                    var id = this.json.scanner[index].id;
+                    var name = this.json.scanner[index].name;
+                    var posX = this.json.scanner[index].x;
+                    var posY = this.json.scanner[index].y;
+                    var angle = this.json.scanner[index].angle;
+                    var textOffset = this.json.scanner[index].textOffset;
+                    var obj = new Scanner(paper,id, name, posX, posY, angle);
+                    obj.build();
+                    collection.add(obj);
+                }
+                break;
                 break;
             case "Switch":
                 // TODO

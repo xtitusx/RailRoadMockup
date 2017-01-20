@@ -8,6 +8,16 @@ socket.on('message', function(message) {
     if (!Array.isArray(message)) {
         console.log(message);
     } else {
-        document.getElementById(message[0]).setAttribute('fill', message[1]);
+        var objectType = message[0];
+        switch(objectType) {
+            case "scanner":
+                document.getElementById(message[1]).setAttribute(message[2], message[3]);
+                break;
+            case "switch":
+                break;
+            case "trafficlight":
+                document.getElementById(message[1]).setAttribute(message[2], message[3]);
+                break;
+        }
     }
 })
