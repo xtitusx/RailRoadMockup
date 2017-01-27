@@ -5,7 +5,7 @@
  */
 
 var app = require('../app');
-var debug = require('debug')('reseauferroviaire:server');
+var debug = require('debug')('railroadmockup:server');
 var http = require('http');
 var jsdom = require('jsdom');
 var fs = require('fs');
@@ -28,45 +28,49 @@ var cronJob = require("cron").CronJob;
 
 railRoadState = app.get('railRoadState'); // Check Business Objects initialization
 scannerCollection = app.get('scannerCollection');
+switchCollection = app.get('switchCollection');
 trafficlightCollection = app.get('trafficlightCollection');
 
 io.sockets.on('connection', function (socket) {
     console.log('Client connected');
     socket.emit('message', 'Connected to ' + server.address().address + ':' + server.address().port);
     // TODO Serial Datasources (Requests/responses to/from Arduino modules), implement arduino.js file in models directory
-
-    new cronJob("*/2 * * * * *", function() {
-        if (railRoadState === true) {
-            // Scanner Emit Message Simulator...
-            var randomId = Math.floor((Math.random() * scannerCollection.getSize()) + 1);
-            for (var indexId = 1; indexId <= scannerCollection.getSize(); indexId++) {
-                var id = 'SC' + indexId;
-                if (randomId === indexId) {
-                    socket.emit('message', scannerCollection.getObjectById(id).buildGreenEmitMessage());
+    var job = new cronJob({
+        cronTime: '*/2 * * * * *',
+        onTick: function () {
+            if (railRoadState === true) {
+                // Scanner Emit Message Simulator...
+                var randomId = Math.floor((Math.random() * scannerCollection.getSize()) + 1);
+                for (var indexId = 1; indexId <= scannerCollection.getSize(); indexId++) {
+                    var id = 'SC' + indexId;
+                    if (randomId === indexId) {
+                        socket.emit('message', scannerCollection.getObjectById(id).buildOnMessage());
+                    }
+                    else {
+                        socket.emit('message', scannerCollection.getObjectById(id).buildOffMessage());
+                    }
                 }
-                else {
-                    socket.emit('message', scannerCollection.getObjectById(id).buildOffEmitMessage());
+                // Trafficlight Emit Message Simulator...
+                randomId = Math.floor((Math.random() * trafficlightCollection.getSize()) + 1);
+                id = 'TR' + randomId;
+                var randomColor = Math.floor((Math.random() * 3) + 1);
+                switch (randomColor) {
+                    case 1:
+                        socket.emit('message', trafficlightCollection.getObjectById(id).buildOffMessage());
+                        break;
+                    case 2:
+                        socket.emit('message', trafficlightCollection.getObjectById(id).buildGreenMessage());
+                        break;
+                    case 3:
+                        socket.emit('message', trafficlightCollection.getObjectById(id).buildRedMessage());
+                        break;
                 }
             }
-            // Trafficlight Emit Message Simulator...
-            randomId = Math.floor((Math.random() * trafficlightCollection.getSize()) + 1);
-            id = 'TR' + randomId;
-            var randomColor = Math.floor((Math.random() * 3) + 1);
-            switch(randomColor) {
-                case 1:
-                    socket.emit('message', trafficlightCollection.getObjectById(id).buildOffEmitMessage());
-                    break;
-                case 2:
-                    socket.emit('message', trafficlightCollection.getObjectById(id).buildGreenEmitMessage());
-                    break;
-                case 3:
-                    socket.emit('message', trafficlightCollection.getObjectById(id).buildRedEmitMessage());
-                    break;
-            }
-        }
-    }, null, true);
+        },
+        start: false
+    });
+    job.start();
 });
-
 /**
  * Listen on provided port, on all network interfaces.
  */

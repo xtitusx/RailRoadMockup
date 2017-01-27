@@ -1,0 +1,16 @@
+
+.btn-SW:hover, .txt-SW:hover {
+    cursor:pointer;
+}
+
+tspan {
+    -webkit-user-select: none; // For Webkit
+    -khtml-user-select: none;
+    -moz-user-select: none; // For Mozilla
+    -o-user-select: none;
+    user-select: none; // Default
+}
+
+svg:hover {
+    cursor:default;
+}

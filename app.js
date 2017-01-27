@@ -16,10 +16,12 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 // Business Objects Collections
-var railRoadState =false;
+var railRoadState = false;
 app.set('railRoadState', railRoadState);
 var scannerCollection = new Collection();
 app.set('scannerCollection', scannerCollection);
+var switchCollection = new Collection();
+app.set('switchCollection', switchCollection);
 var trafficlightCollection = new Collection();
 app.set('trafficlightCollection', trafficlightCollection);
 
@@ -30,6 +32,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'bower_components')));
 
 app.use('/index', index);
 app.use('/users', users);
